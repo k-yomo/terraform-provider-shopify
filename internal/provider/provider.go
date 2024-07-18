@@ -116,15 +116,11 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 }
 
 func (p *ShopifyProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		NewExampleResource,
-	}
+	return []func() resource.Resource{}
 }
 
 func (p *ShopifyProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewExampleDataSource,
-	}
+	return []func() datasource.DataSource{}
 }
 
 func (p *ShopifyProvider) Functions(ctx context.Context) []func() function.Function {

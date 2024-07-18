@@ -13,8 +13,11 @@ description: |-
 ## Example Usage
 
 ```terraform
-provider "scaffolding" {
-  # example configuration here
+provider "shopify" {
+  shop                   = "shop-name.myshopify.com"
+  api_key                = "XXXXXXXXXXXXXX"
+  api_secret_key         = "XXXXXXXXXXXXXX"
+  admin_api_access_token = "shpat_XXXXXXXXXXXXX"
 }
 ```
 
@@ -23,6 +26,7 @@ provider "scaffolding" {
 
 ### Required
 
-- `admin_api_access_token` (String, Sensitive) Shopify Admin API access token.
+- `admin_api_access_token` (String, Sensitive) Shopify Admin API access token.  Defaults to the env variable `SHOPIFY_ADMIN_API_ACCESS_TOKEN`.
 - `api_key` (String) Shopify app API key.
-- `api_secret_key` (String, Sensitive) Shopify app API secret key.
+- `api_secret_key` (String, Sensitive) Shopify app API secret key. Defaults to the env variable `SHOPIFY_API_SECRET_KEY`.
+- `shop` (String) The shopName parameter is the shop's myshopify domain, e.g. `theshop.myshopify.com`, or simply `theshop`.
