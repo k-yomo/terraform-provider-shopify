@@ -5,7 +5,8 @@ package provider
 
 import (
 	"context"
-	"net/http"
+	goshopify "github.com/bold-commerce/go-shopify/v4"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
@@ -29,6 +30,7 @@ type ShopifyProvider struct {
 
 // ShopifyProviderModel describes the provider data model.
 type ShopifyProviderModel struct {
+	Shop                types.String `tfsdk:"shop"`
 	APIKey              types.String `tfsdk:"api_key"`
 	APISecretKey        types.String `tfsdk:"api_secret_key"`
 	AdminAPIAccessToken types.String `tfsdk:"admin_api_access_token"`
@@ -42,17 +44,21 @@ func (p *ShopifyProvider) Metadata(ctx context.Context, req provider.MetadataReq
 func (p *ShopifyProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
+			"shop": schema.StringAttribute{
+				MarkdownDescription: "The shopName parameter is the shop's myshopify domain, e.g. `theshop.myshopify.com`, or simply `theshop`.",
+				Required:            true,
+			},
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "Shopify app API key.",
 				Required:            true,
 			},
 			"api_secret_key": schema.StringAttribute{
-				MarkdownDescription: "Shopify app API secret key.",
+				MarkdownDescription: "Shopify app API secret key. Defaults to the env variable `SHOPIFY_API_SECRET_KEY`.",
 				Required:            true,
 				Sensitive:           true,
 			},
 			"admin_api_access_token": schema.StringAttribute{
-				MarkdownDescription: "Shopify Admin API access token.",
+				MarkdownDescription: "Shopify Admin API access token.  Defaults to the env variable `SHOPIFY_ADMIN_API_ACCESS_TOKEN`.",
 				Required:            true,
 				Sensitive:           true,
 			},
@@ -69,13 +75,44 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 		return
 	}
 
-	// Configuration values are now available.
-	// if data.Endpoint.IsNull() { /* ... */ }
+	var apiSecretKey string
+	if data.APISecretKey.IsNull() {
+		apiSecretKey = os.Getenv("SHOPIFY_API_SECRET_KEY")
+	}
+	if apiSecretKey == "" {
+		resp.Diagnostics.AddError(
+			"Unable to find api_secret_key",
+			"api_secret_key cannot be an empty string",
+		)
+	}
 
-	// Example client configuration for data sources and resources
-	client := http.DefaultClient
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	var adminAPIAccessToken string
+	if data.AdminAPIAccessToken.IsNull() {
+		adminAPIAccessToken = os.Getenv("SHOPIFY_ADMIN_API_ACCESS_TOKEN")
+	}
+	if adminAPIAccessToken == "" {
+		resp.Diagnostics.AddError(
+			"Unable to find admin_api_access_token",
+			"admin_api_access_token cannot be an empty string",
+		)
+		return
+	}
+
+	app := goshopify.App{
+		ApiKey:    data.APIKey.String(),
+		ApiSecret: apiSecretKey,
+	}
+	shopifyClient, err := goshopify.NewClient(app, data.Shop.String(), adminAPIAccessToken)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to create Shopify client",
+			err.Error(),
+		)
+		return
+	}
+
+	resp.DataSourceData = shopifyClient
+	resp.ResourceData = shopifyClient
 }
 
 func (p *ShopifyProvider) Resources(ctx context.Context) []func() resource.Resource {
