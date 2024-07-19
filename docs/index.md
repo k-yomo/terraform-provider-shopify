@@ -15,6 +15,7 @@ description: |-
 ```terraform
 provider "shopify" {
   shop                   = "shop-name.myshopify.com"
+  api_version            = "2024-01"
   api_key                = "XXXXXXXXXXXXXX"
   api_secret_key         = "XXXXXXXXXXXXXX"
   admin_api_access_token = "shpat_XXXXXXXXXXXXX"
@@ -26,7 +27,11 @@ provider "shopify" {
 
 ### Required
 
-- `admin_api_access_token` (String, Sensitive) Shopify Admin API access token.  Defaults to the env variable `SHOPIFY_ADMIN_API_ACCESS_TOKEN`.
 - `api_key` (String) Shopify app API key.
-- `api_secret_key` (String, Sensitive) Shopify app API secret key. Defaults to the env variable `SHOPIFY_API_SECRET_KEY`.
 - `shop` (String) The shopName parameter is the shop's myshopify domain, e.g. `theshop.myshopify.com`, or simply `theshop`.
+
+### Optional
+
+- `admin_api_access_token` (String, Sensitive) Shopify Admin API access token.  Defaults to the env variable `SHOPIFY_ADMIN_API_ACCESS_TOKEN`.
+- `api_secret_key` (String, Sensitive) Shopify app API secret key. Defaults to the env variable `SHOPIFY_API_SECRET_KEY`.
+- `api_version` (String) Shopify API version.
