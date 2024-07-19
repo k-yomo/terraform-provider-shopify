@@ -5,9 +5,14 @@ package provider
 
 import (
 	"context"
-	goshopify "github.com/bold-commerce/go-shopify/v4"
+	"net/http"
 	"os"
 
+	"github.com/hashicorp/terraform-provider-scaffolding-framework/internal/shopify"
+
+	"github.com/hashicorp/terraform-provider-scaffolding-framework/internal/utils"
+
+	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -31,6 +36,7 @@ type ShopifyProvider struct {
 // ShopifyProviderModel describes the provider data model.
 type ShopifyProviderModel struct {
 	Shop                types.String `tfsdk:"shop"`
+	APIVersion          types.String `tfsdk:"api_version"`
 	APIKey              types.String `tfsdk:"api_key"`
 	APISecretKey        types.String `tfsdk:"api_secret_key"`
 	AdminAPIAccessToken types.String `tfsdk:"admin_api_access_token"`
@@ -48,18 +54,22 @@ func (p *ShopifyProvider) Schema(ctx context.Context, req provider.SchemaRequest
 				MarkdownDescription: "The shopName parameter is the shop's myshopify domain, e.g. `theshop.myshopify.com`, or simply `theshop`.",
 				Required:            true,
 			},
+			"api_version": schema.StringAttribute{
+				MarkdownDescription: "Shopify API version.",
+				Optional:            true,
+			},
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "Shopify app API key.",
 				Required:            true,
 			},
 			"api_secret_key": schema.StringAttribute{
 				MarkdownDescription: "Shopify app API secret key. Defaults to the env variable `SHOPIFY_API_SECRET_KEY`.",
-				Required:            true,
+				Optional:            true,
 				Sensitive:           true,
 			},
 			"admin_api_access_token": schema.StringAttribute{
 				MarkdownDescription: "Shopify Admin API access token.  Defaults to the env variable `SHOPIFY_ADMIN_API_ACCESS_TOKEN`.",
-				Required:            true,
+				Optional:            true,
 				Sensitive:           true,
 			},
 		},
@@ -98,11 +108,25 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 		return
 	}
 
+	var opts []goshopify.Option
+	if !data.APIVersion.IsNull() {
+		opts = append(opts, goshopify.WithVersion(data.APIVersion.ValueString()))
+	}
+
+	httpClient := http.DefaultClient
+	httpClient.Transport = utils.NewDebugTransport(http.DefaultTransport)
+	opts = append(opts, goshopify.WithHTTPClient(httpClient))
+
 	app := goshopify.App{
 		ApiKey:    data.APIKey.String(),
 		ApiSecret: apiSecretKey,
 	}
-	shopifyClient, err := goshopify.NewClient(app, data.Shop.String(), adminAPIAccessToken)
+	shopifyRawClient, err := goshopify.NewClient(
+		app,
+		data.Shop.ValueString(),
+		adminAPIAccessToken,
+		opts...,
+	)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create Shopify client",
@@ -111,12 +135,15 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 		return
 	}
 
+	shopifyClient := shopify.NewClient(shopifyRawClient)
 	resp.DataSourceData = shopifyClient
 	resp.ResourceData = shopifyClient
 }
 
 func (p *ShopifyProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewMetafieldDefinitionResource,
+	}
 }
 
 func (p *ShopifyProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
