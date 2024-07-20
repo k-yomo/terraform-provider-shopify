@@ -4,6 +4,7 @@
 package provider
 
 import (
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -19,7 +20,16 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 }
 
 func testAccPreCheck(t *testing.T) {
-	// You can add code here to run prior to any test case execution, for example assertions
-	// about the appropriate environment variables being set are common to see in a pre-check
-	// function.
+	mustEnv(t, "SHOPIFY_SHOP")
+	mustEnv(t, "SHOPIFY_API_VERSION")
+	mustEnv(t, "SHOPIFY_API_KEY")
+	mustEnv(t, "SHOPIFY_API_SECRET_KEY")
+	mustEnv(t, "SHOPIFY_ADMIN_API_ACCESS_TOKEN")
+}
+
+func mustEnv(t *testing.T, name string) {
+	t.Helper()
+	if os.Getenv(name) == "" {
+		t.Fatalf("%s environment variable must be set for acceptance tests", name)
+	}
 }

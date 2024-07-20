@@ -40,7 +40,7 @@ type CreateMetafieldDefinitionResponse struct {
 func (c *Client) CreateMetafieldDefinition(ctx context.Context, input *CreateMetafieldDefinitionInput) (*MetafieldDefinition, error) {
 	variables := map[string]interface{}{"definition": input}
 	query := `
-mutation CreateMetafieldDefinition($definition: CreateMetafieldDefinitionInput!) {
+mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
   metafieldDefinitionCreate(definition: $definition) {
     createdDefinition {
       id

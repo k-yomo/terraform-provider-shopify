@@ -31,6 +31,7 @@ type ShopifyProvider struct {
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
+	isTest  bool
 }
 
 // ShopifyProviderModel describes the provider data model.
@@ -51,16 +52,16 @@ func (p *ShopifyProvider) Schema(ctx context.Context, req provider.SchemaRequest
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"shop": schema.StringAttribute{
-				MarkdownDescription: "The shopName parameter is the shop's myshopify domain, e.g. `theshop.myshopify.com`, or simply `theshop`.",
-				Required:            true,
+				MarkdownDescription: "The shopName parameter is the shop's myshopify domain, e.g. `theshop.myshopify.com`, or simply `theshop`. Defaults to the env variable `SHOPIFY_SHOP`.",
+				Optional:            true,
 			},
 			"api_version": schema.StringAttribute{
-				MarkdownDescription: "Shopify API version.",
+				MarkdownDescription: "Shopify API version. Defaults to the env variable `SHOPIFY_API_VERSION`.",
 				Optional:            true,
 			},
 			"api_key": schema.StringAttribute{
-				MarkdownDescription: "Shopify app API key.",
-				Required:            true,
+				MarkdownDescription: "Shopify app API key. Defaults to the env variable `SHOPIFY_API_KEY`.",
+				Optional:            true,
 			},
 			"api_secret_key": schema.StringAttribute{
 				MarkdownDescription: "Shopify app API secret key. Defaults to the env variable `SHOPIFY_API_SECRET_KEY`.",
@@ -78,39 +79,38 @@ func (p *ShopifyProvider) Schema(ctx context.Context, req provider.SchemaRequest
 
 func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	var data ShopifyProviderModel
-
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	shop := readOrEnvDefault(data.Shop, "SHOPIFY_SHOP")
+	if shop == "" {
+		resp.Diagnostics.AddError("Unable to find shop", "shop cannot be an empty string")
+	}
+	apiVersion := readOrEnvDefault(data.APIVersion, "SHOPIFY_API_VERSION")
+	if apiVersion == "" {
+		resp.Diagnostics.AddError("Unable to find api_version", "api_version cannot be an empty string")
+	}
+	apiKey := readOrEnvDefault(data.APIKey, "SHOPIFY_API_KEY")
+	if apiKey == "" {
+		resp.Diagnostics.AddError("Unable to find api_key", "api_key cannot be an empty string")
+	}
+	apiSecretKey := readOrEnvDefault(data.APISecretKey, "SHOPIFY_API_SECRET_KEY")
+	if apiSecretKey == "" {
+		resp.Diagnostics.AddError("Unable to find api_secret_key", "api_secret_key cannot be an empty string")
+	}
+	adminAPIAccessToken := readOrEnvDefault(data.AdminAPIAccessToken, "SHOPIFY_ADMIN_API_ACCESS_TOKEN")
+	if adminAPIAccessToken == "" {
+		resp.Diagnostics.AddError("Unable to find admin_api_access_token", "admin_api_access_token cannot be an empty string")
+	}
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var apiSecretKey string
-	if data.APISecretKey.IsNull() {
-		apiSecretKey = os.Getenv("SHOPIFY_API_SECRET_KEY")
-	}
-	if apiSecretKey == "" {
-		resp.Diagnostics.AddError(
-			"Unable to find api_secret_key",
-			"api_secret_key cannot be an empty string",
-		)
-	}
-
-	var adminAPIAccessToken string
-	if data.AdminAPIAccessToken.IsNull() {
-		adminAPIAccessToken = os.Getenv("SHOPIFY_ADMIN_API_ACCESS_TOKEN")
-	}
-	if adminAPIAccessToken == "" {
-		resp.Diagnostics.AddError(
-			"Unable to find admin_api_access_token",
-			"admin_api_access_token cannot be an empty string",
-		)
-		return
-	}
-
-	var opts []goshopify.Option
+	opts := []goshopify.Option{goshopify.WithVersion(apiVersion)}
 	if !data.APIVersion.IsNull() {
-		opts = append(opts, goshopify.WithVersion(data.APIVersion.ValueString()))
 	}
 
 	httpClient := http.DefaultClient
@@ -118,12 +118,12 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 	opts = append(opts, goshopify.WithHTTPClient(httpClient))
 
 	app := goshopify.App{
-		ApiKey:    data.APIKey.String(),
+		ApiKey:    apiKey,
 		ApiSecret: apiSecretKey,
 	}
 	shopifyRawClient, err := goshopify.NewClient(
 		app,
-		data.Shop.ValueString(),
+		shop,
 		adminAPIAccessToken,
 		opts...,
 	)
@@ -160,4 +160,11 @@ func New(version string) func() provider.Provider {
 			version: version,
 		}
 	}
+}
+
+func readOrEnvDefault(str types.String, envVarKey string) string {
+	if !str.IsNull() {
+		return str.ValueString()
+	}
+	return os.Getenv(envVarKey)
 }
