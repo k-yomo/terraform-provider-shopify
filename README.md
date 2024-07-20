@@ -1,18 +1,11 @@
-# Terraform Provider Scaffolding (Terraform Plugin Framework)
+# Terraform Provider Shopify
 
-_This template repository is built on the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). The template repository built on the [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk) can be found at [terraform-provider-scaffolding](https://github.com/hashicorp/terraform-provider-scaffolding). See [Which SDK Should I Use?](https://developer.hashicorp.com/terraform/plugin/framework-benefits) in the Terraform documentation for additional information._
+[![License: MPL-2.0](https://img.shields.io/badge/License-MPL2.0-blue.svg)](./LICENSE)
+[![Tests Workflow](https://github.com/k-yomo/terraform-provider-shopify/workflows/Tests/badge.svg)](https://github.com/k-yomo/terraform-provider-shopify/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/k-yomo/terraform-provider-shopify/branch/main/graph/badge.svg)](https://codecov.io/gh/k-yomo/terraform-provider-shopify)
+[![Go Report Card](https://goreportcard.com/badge/k-yomo/terraform-provider-shopify)](https://goreportcard.com/report/k-yomo/terraform-provider-shopify)
 
-This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
-
-- A resource and a data source (`internal/provider/`),
-- Examples (`examples/`) and generated documentation (`docs/`),
-- Miscellaneous meta files.
-
-These files contain boilerplate code that you will need to edit to create your own Terraform provider. Tutorials for creating Terraform providers can be found on the [HashiCorp Developer](https://developer.hashicorp.com/terraform/tutorials/providers-plugin-framework) platform. _Terraform Plugin Framework specific guides are titled accordingly._
-
-Please see the [GitHub template repository documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for how to create a new repository from this template on GitHub.
-
-Once you've written your provider, you'll want to [publish it on the Terraform Registry](https://developer.hashicorp.com/terraform/registry/providers/publishing) so that others can use it.
+Terraform Provider for [Shopify](https://www.shopify.com/).
 
 ## Requirements
 
