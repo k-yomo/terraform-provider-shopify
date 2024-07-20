@@ -8,7 +8,7 @@ import (
 )
 
 // randResourceID generates unique id string
-// id length must be longer than (prefix + uuid length)
+// id length must be longer than (prefix + uuid length).
 func randResourceID(length int) string {
 	// The first character must be alphabet for algolia resources
 	uuid := "test_" + xid.New().String()

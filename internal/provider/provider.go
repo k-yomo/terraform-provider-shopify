@@ -31,7 +31,6 @@ type ShopifyProvider struct {
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
-	isTest  bool
 }
 
 // ShopifyProviderModel describes the provider data model.
@@ -110,9 +109,6 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 	}
 
 	opts := []goshopify.Option{goshopify.WithVersion(apiVersion)}
-	if !data.APIVersion.IsNull() {
-	}
-
 	httpClient := http.DefaultClient
 	httpClient.Transport = utils.NewDebugTransport(http.DefaultTransport)
 	opts = append(opts, goshopify.WithHTTPClient(httpClient))

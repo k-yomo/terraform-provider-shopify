@@ -126,7 +126,7 @@ func (r *MetafieldDefinitionResource) Configure(ctx context.Context, req resourc
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*shopify.Client)
+	r.client, _ = req.ProviderData.(*shopify.Client)
 }
 
 func (r *MetafieldDefinitionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
