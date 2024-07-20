@@ -83,6 +83,11 @@ jobs:
       - run: go mod download
       - env:
           TF_ACC: "1"
+          SHOPIFY_SHOP: "terraform-provider-test.myshopify.com"
+          SHOPIFY_API_VERSION: "2024-07"
+          SHOPIFY_API_KEY: ${{ secrets.SHOPIFY_API_KEY }}
+          SHOPIFY_API_SECRET_KEY: ${{ secrets.SHOPIFY_API_SECRET_KEY }}
+          SHOPIFY_ADMIN_API_ACCESS_TOKEN: ${{ SHOPIFY_ADMIN_API_ACCESS_TOKEN }}
         run: go test -v -cover -coverprofile=coverage.out ./internal/provider/
         timeout-minutes: 10
 
