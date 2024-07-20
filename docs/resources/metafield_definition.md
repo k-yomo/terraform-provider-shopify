@@ -32,30 +32,30 @@ Must be 3-64 characters long and can contain alphanumeric, hyphen, and underscor
 - `name` (String) The human-readable name for the metafield definition.
 - `owner_type` (String) The resource type that the metafield definition is attached to.
 Possible values are:
-- API_PERMISSION
-- ARTICLE
-- BLOG
-- CARTTRANSFORM
-- COLLECTION
-- COMPANY
-- COMPANY_LOCATION
-- CUSTOMER
-- DELIVERY_CUSTOMIZATION
-- DISCOUNT
-- DRAFTORDER
-- FULFILLMENT_CONSTRAINT_RULE
-- LOCATION
-- MARKET
-- MEDIA_IMAGE
-- ORDER
-- ORDER_ROUTING_LOCATION_RULE
-- PAGE
-- PAYMENT_CUSTOMIZATION
-- PRODUCT
-- PRODUCTVARIANT
-- SHOP
-- VALIDATION
-- PRODUCTIMAGE
+  - API_PERMISSION
+  - ARTICLE
+  - BLOG
+  - CARTTRANSFORM
+  - COLLECTION
+  - COMPANY
+  - COMPANY_LOCATION
+  - CUSTOMER
+  - DELIVERY_CUSTOMIZATION
+  - DISCOUNT
+  - DRAFTORDER
+  - FULFILLMENT_CONSTRAINT_RULE
+  - LOCATION
+  - MARKET
+  - MEDIA_IMAGE
+  - ORDER
+  - ORDER_ROUTING_LOCATION_RULE
+  - PAGE
+  - PAYMENT_CUSTOMIZATION
+  - PRODUCT
+  - PRODUCTVARIANT
+  - SHOP
+  - VALIDATION
+  - PRODUCTIMAGE
 - `type` (String) The type of data that each of the metafields that belong to the metafield definition will store. Refer to the list of [supported types](https://shopify.dev/docs/apps/build/custom-data/metafields/list-of-data-types).
 
 ### Optional

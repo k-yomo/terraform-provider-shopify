@@ -66,30 +66,30 @@ func (r *MetafieldDefinitionResource) Schema(ctx context.Context, req resource.S
 			"owner_type": schema.StringAttribute{
 				MarkdownDescription: `The resource type that the metafield definition is attached to.
 Possible values are:
-- API_PERMISSION
-- ARTICLE
-- BLOG
-- CARTTRANSFORM
-- COLLECTION
-- COMPANY
-- COMPANY_LOCATION
-- CUSTOMER
-- DELIVERY_CUSTOMIZATION
-- DISCOUNT
-- DRAFTORDER
-- FULFILLMENT_CONSTRAINT_RULE
-- LOCATION
-- MARKET
-- MEDIA_IMAGE
-- ORDER
-- ORDER_ROUTING_LOCATION_RULE
-- PAGE
-- PAYMENT_CUSTOMIZATION
-- PRODUCT
-- PRODUCTVARIANT
-- SHOP
-- VALIDATION
-- PRODUCTIMAGE
+  - API_PERMISSION
+  - ARTICLE
+  - BLOG
+  - CARTTRANSFORM
+  - COLLECTION
+  - COMPANY
+  - COMPANY_LOCATION
+  - CUSTOMER
+  - DELIVERY_CUSTOMIZATION
+  - DISCOUNT
+  - DRAFTORDER
+  - FULFILLMENT_CONSTRAINT_RULE
+  - LOCATION
+  - MARKET
+  - MEDIA_IMAGE
+  - ORDER
+  - ORDER_ROUTING_LOCATION_RULE
+  - PAGE
+  - PAYMENT_CUSTOMIZATION
+  - PRODUCT
+  - PRODUCTVARIANT
+  - SHOP
+  - VALIDATION
+  - PRODUCTIMAGE
 `,
 				Required:      true,
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
