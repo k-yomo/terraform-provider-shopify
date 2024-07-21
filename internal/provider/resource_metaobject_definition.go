@@ -49,11 +49,12 @@ type MetaobjectDefinitionResourceModel struct {
 
 // MetaobjectFieldDefinitionModel describes the metaobject field definition data model.
 type MetaobjectFieldDefinitionModel struct {
-	Key         types.String `tfsdk:"key"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
-	Type        types.String `tfsdk:"type"`
-	Required    types.Bool   `tfsdk:"required"`
+	Key         types.String                          `tfsdk:"key"`
+	Name        types.String                          `tfsdk:"name"`
+	Description types.String                          `tfsdk:"description"`
+	Type        types.String                          `tfsdk:"type"`
+	Required    types.Bool                            `tfsdk:"required"`
+	Validations []*MetafieldDefinitionValidationModel `tfsdk:"validations"`
 }
 
 func (r *MetaobjectDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -126,6 +127,22 @@ Must be 3-64 characters long and only contain alphanumeric, hyphen, and undersco
 							Optional:            true,
 							Computed:            true,
 							Default:             booldefault.StaticBool(false),
+						},
+						"validations": schema.ListNestedAttribute{
+							MarkdownDescription: "Custom validations that apply to values assigned to the field.",
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"name": schema.StringAttribute{
+										MarkdownDescription: "The name for the metafield definition validation.",
+										Required:            true,
+									},
+									"value": schema.StringAttribute{
+										MarkdownDescription: "The value for the metafield definition validation.",
+										Required:            true,
+									},
+								},
+							},
+							Optional: true,
 						},
 					},
 				},
@@ -353,6 +370,7 @@ func convertMetaobjectFieldDefinitionToModel(definition *shopify.MetaobjectField
 		Description: types.StringPointerValue(definition.Description),
 		Type:        types.StringValue(definition.Type.Name),
 		Required:    types.BoolValue(definition.Required),
+		Validations: convertValidationsToModels(definition.Validations),
 	}
 }
 
@@ -363,5 +381,6 @@ func convertMetaobjectFieldDefinitionModelToCreateInput(model *MetaobjectFieldDe
 		Description: model.Description.ValueStringPointer(),
 		Type:        model.Type.ValueString(),
 		Required:    model.Required.ValueBool(),
+		Validations: convertValidationModelsToValidations(model.Validations),
 	}
 }

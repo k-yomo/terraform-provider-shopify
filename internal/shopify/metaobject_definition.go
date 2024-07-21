@@ -15,12 +15,13 @@ type MetaobjectDefinition struct {
 }
 
 type MetaobjectFieldDefinition struct {
-	Key               string                   `json:"key"`
-	Name              string                   `json:"name"`
-	Description       *string                  `json:"description,omitempty"`
-	Type              *MetafieldDefinitionType `json:"type"`
-	Required          bool                     `json:"required"`
-	HasThumbnailField bool                     `json:"hasThumbnailField"`
+	Key               string                           `json:"key"`
+	Name              string                           `json:"name"`
+	Description       *string                          `json:"description,omitempty"`
+	Type              *MetafieldDefinitionType         `json:"type"`
+	Required          bool                             `json:"required"`
+	HasThumbnailField bool                             `json:"hasThumbnailField"`
+	Validations       []*MetafieldDefinitionValidation `json:"validations"`
 }
 
 type MetaobjectDefinitionCreateInput struct {
@@ -32,11 +33,12 @@ type MetaobjectDefinitionCreateInput struct {
 }
 
 type MetaobjectFieldDefinitionCreateInput struct {
-	Key         string  `json:"key"`
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Type        string  `json:"type"`
-	Required    bool    `json:"required"`
+	Key         string                           `json:"key"`
+	Name        *string                          `json:"name,omitempty"`
+	Description *string                          `json:"description,omitempty"`
+	Type        string                           `json:"type"`
+	Required    bool                             `json:"required"`
+	Validations []*MetafieldDefinitionValidation `json:"validations"`
 }
 
 func (c *Client) CreateMetaobjectDefinition(ctx context.Context, input *MetaobjectDefinitionCreateInput) (*MetaobjectDefinition, error) {
@@ -59,6 +61,10 @@ mutation CreateMetaobjectDefinition($definition: MetaobjectDefinitionCreateInput
           name
 		}	
 		required
+        validations {
+          name
+          value
+        }
       }
       hasThumbnailField
     }
@@ -110,6 +116,10 @@ query metaobjectDefinition($id: ID!) {
         name
 		}	
 		required
+        validations {
+          name
+          value
+        }
     }
     hasThumbnailField
   }
@@ -138,10 +148,11 @@ type MetaobjectFieldDefinitionOperationInput struct {
 }
 
 type MetaobjectFieldDefinitionUpdateInput struct {
-	Key         string  `json:"key"`
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
-	Required    bool    `json:"required"`
+	Key         string                           `json:"key"`
+	Name        *string                          `json:"name"`
+	Description *string                          `json:"description"`
+	Required    bool                             `json:"required"`
+	Validations []*MetafieldDefinitionValidation `json:"validations"`
 }
 
 type MetaobjectFieldDefinitionDeleteInput struct {
@@ -168,6 +179,10 @@ mutation UpdateMetaobjectDefinition($id: ID!, $definition: MetaobjectDefinitionU
           name
 	  	}	
 	  	required
+        validations {
+          name
+          value
+        }
       }
       hasThumbnailField
     }

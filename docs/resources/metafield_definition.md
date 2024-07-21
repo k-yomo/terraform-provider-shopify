@@ -64,7 +64,16 @@ Possible values are:
 - `namespace` (String) The container for a group of metafields that the metafield is or will be associated with. Used in tandem with `key` to lookup a metafield on a resource, preventing conflicts with other metafields with the same `key.`
 					Must be 3-255 characters long and can contain alphanumeric, hyphen, and underscore characters.
 - `pin` (Boolean) Whether to pin the metafield definition.
+- `validations` (Attributes List) Custom validations that apply to values assigned to the field. (see [below for nested schema](#nestedatt--validations))
 
 ### Read-Only
 
 - `id` (String) The unique ID of the metafield.
+
+<a id="nestedatt--validations"></a>
+### Nested Schema for `validations`
+
+Required:
+
+- `name` (String) The name for the metafield definition validation.
+- `value` (String) The value for the metafield definition validation.

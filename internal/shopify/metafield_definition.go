@@ -5,14 +5,15 @@ import (
 )
 
 type MetafieldDefinition struct {
-	ID             string                   `json:"id"`
-	Name           string                   `json:"name"`
-	Description    *string                  `json:"description"`
-	OwnerType      string                   `json:"ownerType"`
-	Namespace      string                   `json:"namespace"`
-	Key            string                   `json:"key"`
-	Type           *MetafieldDefinitionType `json:"type"`
-	PinnedPosition *int                     `json:"pinnedPosition"`
+	ID             string                           `json:"id"`
+	Name           string                           `json:"name"`
+	Description    *string                          `json:"description"`
+	OwnerType      string                           `json:"ownerType"`
+	Namespace      string                           `json:"namespace"`
+	Key            string                           `json:"key"`
+	Type           *MetafieldDefinitionType         `json:"type"`
+	PinnedPosition *int                             `json:"pinnedPosition"`
+	Validations    []*MetafieldDefinitionValidation `json:"validations"`
 }
 
 type MetafieldDefinitionType struct {
@@ -20,14 +21,20 @@ type MetafieldDefinitionType struct {
 	Name     string `json:"name"`
 }
 
+type MetafieldDefinitionValidation struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 type MetafieldDefinitionInput struct {
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	OwnerType   string `json:"ownerType"`
-	Namespace   string `json:"namespace"`
-	Key         string `json:"key"`
-	Type        string `json:"type"`
-	Pin         bool   `json:"pin"`
+	Name        string                           `json:"name"`
+	Description string                           `json:"description,omitempty"`
+	OwnerType   string                           `json:"ownerType"`
+	Namespace   string                           `json:"namespace"`
+	Key         string                           `json:"key"`
+	Type        string                           `json:"type"`
+	Pin         bool                             `json:"pin"`
+	Validations []*MetafieldDefinitionValidation `json:"validations"`
 }
 
 type CreateMetafieldDefinitionResponse struct {
@@ -54,6 +61,10 @@ mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
         name
       }
       pinnedPosition
+      validations {
+        name	
+        value
+      }
     }
     userErrors {
       field
@@ -83,7 +94,7 @@ func (c *Client) GetMetafieldDefinition(ctx context.Context, id string) (*Metafi
 	query := `
 query metafieldDefinition($id: ID!) {
   metafieldDefinition(id: $id) {
-	id
+    id
     name
 	description
 	key
@@ -94,6 +105,10 @@ query metafieldDefinition($id: ID!) {
       name
     }
 	pinnedPosition
+    validations {
+      name	
+      value
+    }
   }
 }
 `
@@ -107,12 +122,13 @@ query metafieldDefinition($id: ID!) {
 }
 
 type MetafieldDefinitionUpdateInput struct {
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	OwnerType   string `json:"ownerType"`
-	Namespace   string `json:"namespace"`
-	Key         string `json:"key"`
-	Pin         bool   `json:"pin"`
+	Name        string                           `json:"name"`
+	Description string                           `json:"description,omitempty"`
+	OwnerType   string                           `json:"ownerType"`
+	Namespace   string                           `json:"namespace"`
+	Key         string                           `json:"key"`
+	Pin         bool                             `json:"pin"`
+	Validations []*MetafieldDefinitionValidation `json:"validations"`
 }
 
 type UpdateMetafieldDefinitionResponse struct {
@@ -139,6 +155,10 @@ mutation UpdateMetafieldDefinition($definition: MetafieldDefinitionUpdateInput!)
         name
       }
       pinnedPosition
+      validations {
+        name	
+        value
+      }
     }
     userErrors {
       field

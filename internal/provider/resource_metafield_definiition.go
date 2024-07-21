@@ -30,14 +30,20 @@ type MetafieldDefinitionResource struct {
 
 // MetafieldDefinitionResourceModel describes the resource data model.
 type MetafieldDefinitionResourceModel struct {
-	ID          types.String `tfsdk:"id"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
-	OwnerType   types.String `tfsdk:"owner_type"`
-	Namespace   types.String `tfsdk:"namespace"`
-	Key         types.String `tfsdk:"key"`
-	Type        types.String `tfsdk:"type"`
-	Pin         types.Bool   `tfsdk:"pin"`
+	ID          types.String                          `tfsdk:"id"`
+	Name        types.String                          `tfsdk:"name"`
+	Description types.String                          `tfsdk:"description"`
+	OwnerType   types.String                          `tfsdk:"owner_type"`
+	Namespace   types.String                          `tfsdk:"namespace"`
+	Key         types.String                          `tfsdk:"key"`
+	Type        types.String                          `tfsdk:"type"`
+	Pin         types.Bool                            `tfsdk:"pin"`
+	Validations []*MetafieldDefinitionValidationModel `tfsdk:"validations"`
+}
+
+type MetafieldDefinitionValidationModel struct {
+	Name  types.String `json:"name"`
+	Value types.String `json:"value"`
 }
 
 func (r *MetafieldDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -117,6 +123,22 @@ Possible values are:
 				Computed:            true,
 				Default:             booldefault.StaticBool(false),
 			},
+			"validations": schema.ListNestedAttribute{
+				MarkdownDescription: "Custom validations that apply to values assigned to the field.",
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							MarkdownDescription: "The name for the metafield definition validation.",
+							Required:            true,
+						},
+						"value": schema.StringAttribute{
+							MarkdownDescription: "The value for the metafield definition validation.",
+							Required:            true,
+						},
+					},
+				},
+				Optional: true,
+			},
 		},
 	}
 }
@@ -142,8 +164,9 @@ func (r *MetafieldDefinitionResource) Create(ctx context.Context, req resource.C
 		Description: data.Description.ValueString(),
 		Namespace:   data.Namespace.ValueString(),
 		OwnerType:   data.OwnerType.ValueString(),
-		Pin:         data.Pin.ValueBool(),
 		Type:        data.Type.ValueString(),
+		Pin:         data.Pin.ValueBool(),
+		Validations: convertValidationModelsToValidations(data.Validations),
 	}
 	createdMetafieldDefinition, err := r.client.CreateMetafieldDefinition(ctx, &input)
 	if err != nil {
@@ -230,5 +253,31 @@ func convertMetafieldDefinitionToResourceModel(definition *shopify.MetafieldDefi
 		Key:         types.StringValue(definition.Key),
 		Type:        types.StringValue(definition.Type.Name),
 		Pin:         types.BoolValue(definition.PinnedPosition != nil),
+		Validations: convertValidationsToModels(definition.Validations),
 	}
+}
+
+func convertValidationModelsToValidations(validationModels []*MetafieldDefinitionValidationModel) []*shopify.MetafieldDefinitionValidation {
+	validations := make([]*shopify.MetafieldDefinitionValidation, 0, len(validationModels))
+	for _, model := range validationModels {
+		validations = append(validations, &shopify.MetafieldDefinitionValidation{
+			Name:  model.Name.ValueString(),
+			Value: model.Value.ValueString(),
+		})
+	}
+	return validations
+}
+
+func convertValidationsToModels(validations []*shopify.MetafieldDefinitionValidation) []*MetafieldDefinitionValidationModel {
+	if len(validations) == 0 {
+		return nil
+	}
+	validationModels := make([]*MetafieldDefinitionValidationModel, 0, len(validations))
+	for _, validation := range validations {
+		validationModels = append(validationModels, &MetafieldDefinitionValidationModel{
+			Name:  types.StringValue(validation.Name),
+			Value: types.StringValue(validation.Value),
+		})
+	}
+	return validationModels
 }
