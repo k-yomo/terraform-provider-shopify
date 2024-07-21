@@ -108,18 +108,18 @@ query metaobjectDefinition($id: ID!) {
     description
     displayNameKey
     fieldDefinitions {	
-		key
-		name
-		description
-		type {
-		  category
+      key
+      name
+      description
+      type {
+        category
         name
-		}	
-		required
-        validations {
-          name
-          value
-        }
+      }	
+      required
+      validations {
+        name
+        value
+      }
     }
     hasThumbnailField
   }

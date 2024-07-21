@@ -37,6 +37,9 @@ func TestAccMetaobjectDefinitionResource(t *testing.T) {
 				Config: testAccMetaobjectDefinitionResourceUpdateConfig(metaobjectType),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "name", "Updated Author"),
+					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "field_definitions.#", "3"),
+					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "field_definitions.0.validations.0.name", "min"),
+					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "field_definitions.0.validations.0.value", "10"),
 				),
 			},
 		},
@@ -76,6 +79,12 @@ resource "shopify_metaobject_definition" "author" {
 	  name     = "Author Name"
 	  type     = "single_line_text_field"
       required = true
+	  validations = [
+		{
+		  name  = "min"
+		  value = "10"	
+		}
+	  ] 
     },
 	{
       key      = "profile_image_url"

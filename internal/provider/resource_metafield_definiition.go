@@ -42,8 +42,8 @@ type MetafieldDefinitionResourceModel struct {
 }
 
 type MetafieldDefinitionValidationModel struct {
-	Name  types.String `json:"name"`
-	Value types.String `json:"value"`
+	Name  types.String `tfsdk:"name"`
+	Value types.String `tfsdk:"value"`
 }
 
 func (r *MetafieldDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -124,7 +124,7 @@ Possible values are:
 				Default:             booldefault.StaticBool(false),
 			},
 			"validations": schema.ListNestedAttribute{
-				MarkdownDescription: "Custom validations that apply to values assigned to the field.",
+				MarkdownDescription: "Custom validations that apply to values assigned to the field. Refer to the list of [supported validations](https://shopify.dev/docs/apps/build/custom-data/metafields/definitions/list-of-validation-options).",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -212,6 +212,7 @@ func (r *MetafieldDefinitionResource) Update(ctx context.Context, req resource.U
 		Namespace:   data.Namespace.ValueString(),
 		OwnerType:   data.OwnerType.ValueString(),
 		Pin:         data.Pin.ValueBool(),
+		Validations: convertValidationModelsToValidations(data.Validations),
 	}
 	updatedMetafieldDefinition, err := r.client.UpdateMetafieldDefinition(ctx, &input)
 	if err != nil {

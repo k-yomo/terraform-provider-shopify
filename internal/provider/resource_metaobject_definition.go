@@ -129,7 +129,7 @@ Must be 3-64 characters long and only contain alphanumeric, hyphen, and undersco
 							Default:             booldefault.StaticBool(false),
 						},
 						"validations": schema.ListNestedAttribute{
-							MarkdownDescription: "Custom validations that apply to values assigned to the field.",
+							MarkdownDescription: "Custom validations that apply to values assigned to the field. Refer to the list of [supported validations](https://shopify.dev/docs/apps/build/custom-data/metafields/definitions/list-of-validation-options).",
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"name": schema.StringAttribute{
@@ -260,6 +260,7 @@ func (r *MetaobjectDefinitionResource) Update(ctx context.Context, req resource.
 						Name:        newFieldDef.Name.ValueStringPointer(),
 						Description: newFieldDef.Description.ValueStringPointer(),
 						Required:    newFieldDef.Required.ValueBool(),
+						Validations: convertValidationModelsToValidations(newFieldDef.Validations),
 					},
 				})
 			}

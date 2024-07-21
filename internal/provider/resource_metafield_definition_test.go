@@ -38,6 +38,8 @@ func TestAccMetafieldDefinitionResource(t *testing.T) {
 					resource.TestCheckResourceAttr("shopify_metafield_definition.test", "name", "Terraform Test Updated"),
 					resource.TestCheckResourceAttr("shopify_metafield_definition.test", "description", "Updated description"),
 					resource.TestCheckResourceAttr("shopify_metafield_definition.test", "pin", "true"),
+					resource.TestCheckResourceAttr("shopify_metafield_definition.test", "validations.0.name", "min"),
+					resource.TestCheckResourceAttr("shopify_metafield_definition.test", "validations.0.value", "10"),
 				),
 			},
 		},
@@ -66,6 +68,12 @@ resource "shopify_metafield_definition" "test" {
   owner_type  = "CUSTOMER"
   type        = "single_line_text_field"
   pin         = true
+  validations = [
+	{
+	  name  = "min"
+	  value = "10"	
+    }
+  ] 
 }
 `, metafieldKey)
 }

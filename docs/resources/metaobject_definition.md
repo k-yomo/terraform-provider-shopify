@@ -71,7 +71,7 @@ Optional:
 - `description` (String) An administrative description of the field.
 - `name` (String) A human-readable name for the field. This can be changed at any time.
 - `required` (Boolean) Whether metaobjects require a saved value for the field.
-- `validations` (Attributes List) Custom validations that apply to values assigned to the field. (see [below for nested schema](#nestedatt--field_definitions--validations))
+- `validations` (Attributes List) Custom validations that apply to values assigned to the field. Refer to the list of [supported validations](https://shopify.dev/docs/apps/build/custom-data/metafields/definitions/list-of-validation-options). (see [below for nested schema](#nestedatt--field_definitions--validations))
 
 <a id="nestedatt--field_definitions--validations"></a>
 ### Nested Schema for `field_definitions.validations`
