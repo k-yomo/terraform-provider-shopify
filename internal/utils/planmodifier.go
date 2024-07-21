@@ -15,7 +15,7 @@ func LogAttributeChangeModifier(f func(context.Context, planmodifier.StringReque
 	}
 }
 
-// logAttributeChangeModifier is an plan modifier that logs the attribute change
+// logAttributeChangeModifier is an plan modifier that logs the attribute change.
 type logAttributeChangeModifier struct {
 	ifFunc              func(context.Context, planmodifier.StringRequest) diag.Diagnostics
 	description         string

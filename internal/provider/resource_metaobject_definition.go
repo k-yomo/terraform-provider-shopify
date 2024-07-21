@@ -154,19 +154,6 @@ func (r *MetaobjectDefinitionResource) Create(ctx context.Context, req resource.
 		return
 	}
 
-	fieldDefinitions := make([]*shopify.MetaobjectFieldDefinition, 0, len(data.FieldDefinitions))
-	for _, fieldDefinitionModel := range data.FieldDefinitions {
-		fieldDefinitions = append(fieldDefinitions, &shopify.MetaobjectFieldDefinition{
-			Key:         fieldDefinitionModel.Key.ValueString(),
-			Name:        fieldDefinitionModel.Name.ValueString(),
-			Description: fieldDefinitionModel.Description.ValueStringPointer(),
-			Type: &shopify.MetafieldDefinitionType{
-				Name: fieldDefinitionModel.Type.ValueString(),
-			},
-			Required: fieldDefinitionModel.Required.ValueBool(),
-		})
-	}
-
 	var shopifyFieldDefinitions []*shopify.MetaobjectFieldDefinitionCreateInput
 	for _, fieldDefinitionModel := range data.FieldDefinitions {
 		shopifyFieldDefinitions = append(shopifyFieldDefinitions, convertMetaobjectFieldDefinitionModelToCreateInput(fieldDefinitionModel))
