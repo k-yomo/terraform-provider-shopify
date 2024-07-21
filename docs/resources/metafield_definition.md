@@ -3,12 +3,12 @@
 page_title: "shopify_metafield_definition Resource - terraform-provider-shopify"
 subcategory: ""
 description: |-
-  MetafieldDefinition definition resource
+  Metafield definitions enable you to define additional validation constraints for metafields, and enable the merchant to edit metafield values in context.
 ---
 
 # shopify_metafield_definition (Resource)
 
-MetafieldDefinition definition resource
+Metafield definitions enable you to define additional validation constraints for metafields, and enable the merchant to edit metafield values in context.
 
 ## Example Usage
 

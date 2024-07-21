@@ -226,7 +226,7 @@ func (r *MetaobjectDefinitionResource) Update(ctx context.Context, req resource.
 			if reflect.DeepEqual(oldFieldDef, newFieldDef) {
 				continue
 			}
-			if newFieldDef.Type != oldFieldDef.Type {
+			if !newFieldDef.Type.Equal(oldFieldDef.Type) {
 				fieldDefinitions1stReq = append(fieldDefinitions1stReq, &shopify.MetaobjectFieldDefinitionOperationInput{
 					Delete: &shopify.MetaobjectFieldDefinitionDeleteInput{
 						Key: oldFieldDef.Key.ValueString(),

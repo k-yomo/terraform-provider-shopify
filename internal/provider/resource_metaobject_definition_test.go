@@ -57,7 +57,7 @@ resource "shopify_metaobject_definition" "author" {
     },
 	{
       key      = "profile_image_url"
-	  name     = "Profile Iamge URL"
+	  name     = "Profile Image URL"
 	  type     = "single_line_text_field"
     }
   ]
@@ -79,7 +79,7 @@ resource "shopify_metaobject_definition" "author" {
     },
 	{
       key      = "profile_image_url"
-	  name     = "Profile Iamge URL"
+	  name     = "Profile Image URL"
 	  type     = "url"
       required = true
     },
