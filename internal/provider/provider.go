@@ -139,6 +139,7 @@ func (p *ShopifyProvider) Configure(ctx context.Context, req provider.ConfigureR
 func (p *ShopifyProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewMetafieldDefinitionResource,
+		NewMetaobjectDefinitionResource,
 	}
 }
 

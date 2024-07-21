@@ -46,7 +46,7 @@ func (r *MetafieldDefinitionResource) Metadata(ctx context.Context, req resource
 
 func (r *MetafieldDefinitionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "MetafieldDefinition definition resource",
+		MarkdownDescription: "Metafield definitions enable you to define additional validation constraints for metafields, and enable the merchant to edit metafield values in context.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -113,8 +113,8 @@ Possible values are:
 			},
 			"pin": schema.BoolAttribute{
 				MarkdownDescription: "Whether to pin the metafield definition.",
-				Computed:            true,
 				Optional:            true,
+				Computed:            true,
 				Default:             booldefault.StaticBool(false),
 			},
 		},
@@ -136,7 +136,7 @@ func (r *MetafieldDefinitionResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	input := shopify.CreateMetafieldDefinitionInput{
+	input := shopify.MetafieldDefinitionInput{
 		Key:         data.Key.ValueString(),
 		Name:        data.Name.ValueString(),
 		Description: data.Description.ValueString(),
@@ -182,7 +182,7 @@ func (r *MetafieldDefinitionResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
-	input := shopify.UpdateMetafieldDefinitionInput{
+	input := shopify.MetafieldDefinitionUpdateInput{
 		Key:         data.Key.ValueString(),
 		Name:        data.Name.ValueString(),
 		Description: data.Description.ValueString(),

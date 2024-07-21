@@ -20,7 +20,7 @@ type MetafieldDefinitionType struct {
 	Name     string `json:"name"`
 }
 
-type CreateMetafieldDefinitionInput struct {
+type MetafieldDefinitionInput struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	OwnerType   string `json:"ownerType"`
@@ -37,7 +37,7 @@ type CreateMetafieldDefinitionResponse struct {
 	} `json:"metafieldDefinitionCreate"`
 }
 
-func (c *Client) CreateMetafieldDefinition(ctx context.Context, input *CreateMetafieldDefinitionInput) (*MetafieldDefinition, error) {
+func (c *Client) CreateMetafieldDefinition(ctx context.Context, input *MetafieldDefinitionInput) (*MetafieldDefinition, error) {
 	variables := map[string]interface{}{"definition": input}
 	query := `
 mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
@@ -106,7 +106,7 @@ query metafieldDefinition($id: ID!) {
 	return gqlResp.MetafieldDefinition, nil
 }
 
-type UpdateMetafieldDefinitionInput struct {
+type MetafieldDefinitionUpdateInput struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	OwnerType   string `json:"ownerType"`
@@ -122,7 +122,7 @@ type UpdateMetafieldDefinitionResponse struct {
 	} `json:"metafieldDefinitionUpdate"`
 }
 
-func (c *Client) UpdateMetafieldDefinition(ctx context.Context, input *UpdateMetafieldDefinitionInput) (*MetafieldDefinition, error) {
+func (c *Client) UpdateMetafieldDefinition(ctx context.Context, input *MetafieldDefinitionUpdateInput) (*MetafieldDefinition, error) {
 	variables := map[string]interface{}{"definition": input}
 	query := `
 mutation UpdateMetafieldDefinition($definition: MetafieldDefinitionUpdateInput!) {
@@ -161,7 +161,7 @@ mutation UpdateMetafieldDefinition($definition: MetafieldDefinitionUpdateInput!)
 
 type DeleteMetafieldDefinitionResponse struct {
 	MetafieldDefinitionDelete struct {
-		DeletedDefinitionID string `json:"DeletedDefinitionId"`
+		DeletedDefinitionID string `json:"deletedDefinitionId"`
 		UserErrors          UserErrors
 	} `json:"metafieldDefinitionDelete"`
 }
