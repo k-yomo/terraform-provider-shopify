@@ -1,0 +1,1 @@
+terraform import shopify_metaobject_definition.example gid://shopify/MetaobjectDefinition/{{id}}

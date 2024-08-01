@@ -80,3 +80,11 @@ Required:
 
 - `name` (String) The name for the metafield definition validation.
 - `value` (String) The value for the metafield definition validation.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+terraform import shopify_metaobject_definition.example gid://shopify/MetaobjectDefinition/{{id}}
+```

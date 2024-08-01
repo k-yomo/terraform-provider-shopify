@@ -1,0 +1,1 @@
+terraform import shopify_metafield_definition.test gid://shopify/MetafieldDefinition/{{id}}
