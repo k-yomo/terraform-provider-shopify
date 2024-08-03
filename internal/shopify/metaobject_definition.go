@@ -4,6 +4,11 @@ import (
 	"context"
 )
 
+type MetaobjectAccess struct {
+	Admin      string `json:"admin,omitempty"`
+	Storefront string `json:"storefront,omitempty"`
+}
+
 type MetaobjectDefinition struct {
 	ID                string                       `json:"id"`
 	Type              string                       `json:"type"`
@@ -12,6 +17,7 @@ type MetaobjectDefinition struct {
 	DisplayNameKey    *string                      `json:"displayNameKey,omitempty"`
 	FieldDefinitions  []*MetaobjectFieldDefinition `json:"fieldDefinitions"`
 	HasThumbnailField bool                         `json:"hasThumbnailField"`
+	Access            *MetaobjectAccess            `json:"access"`
 }
 
 type MetaobjectFieldDefinition struct {
@@ -30,6 +36,7 @@ type MetaobjectDefinitionCreateInput struct {
 	Description      *string                                 `json:"description,omitempty"`
 	DisplayNameKey   *string                                 `json:"displayNameKey,omitempty"`
 	FieldDefinitions []*MetaobjectFieldDefinitionCreateInput `json:"fieldDefinitions"`
+	Access           *MetaobjectAccess                       `json:"access,omitempty"`
 }
 
 type MetaobjectFieldDefinitionCreateInput struct {
@@ -67,6 +74,10 @@ mutation CreateMetaobjectDefinition($definition: MetaobjectDefinitionCreateInput
         }
       }
       hasThumbnailField
+      access {
+        admin
+        storefront
+      }
     }
     userErrors {
       field
@@ -122,6 +133,10 @@ query metaobjectDefinition($id: ID!) {
       }
     }
     hasThumbnailField
+    access {
+      admin
+      storefront
+    }
   }
 }
 `
@@ -139,6 +154,7 @@ type MetaobjectDefinitionUpdateInput struct {
 	Description      *string                                    `json:"description,omitempty"`
 	DisplayNameKey   *string                                    `json:"displayNameKey,omitempty"`
 	FieldDefinitions []*MetaobjectFieldDefinitionOperationInput `json:"fieldDefinitions"`
+	Access           *MetaobjectAccess                          `json:"access,omitempty"`
 }
 
 type MetaobjectFieldDefinitionOperationInput struct {
@@ -185,6 +201,10 @@ mutation UpdateMetaobjectDefinition($id: ID!, $definition: MetaobjectDefinitionU
         }
       }
       hasThumbnailField
+      access {
+        admin
+        storefront
+      }
     }
     userErrors {
       field

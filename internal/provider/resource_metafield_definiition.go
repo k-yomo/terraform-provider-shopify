@@ -195,7 +195,8 @@ func (r *MetafieldDefinitionResource) Read(ctx context.Context, req resource.Rea
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, convertMetafieldDefinitionToResourceModel(metafieldDefinition, data))...)
+	metafieldDefinitionModel := convertMetafieldDefinitionToResourceModel(metafieldDefinition, data)
+	resp.Diagnostics.Append(resp.State.Set(ctx, metafieldDefinitionModel)...)
 }
 
 func (r *MetafieldDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {

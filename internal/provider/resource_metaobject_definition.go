@@ -6,6 +6,14 @@ import (
 	"reflect"
 	"sort"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-provider-scaffolding-framework/internal/utils"
@@ -45,6 +53,30 @@ type MetaobjectDefinitionResourceModel struct {
 	DisplayNameKey    types.String                      `tfsdk:"display_name_key"`
 	FieldDefinitions  []*MetaobjectFieldDefinitionModel `tfsdk:"field_definitions"`
 	HasThumbnailField types.Bool                        `tfsdk:"has_thumbnail_field"`
+	Access            types.Object                      `tfsdk:"access"`
+}
+
+type MetaobjectDefinitionAccessModel struct {
+	Admin      types.String `tfsdk:"admin"`
+	Storefront types.String `tfsdk:"storefront"`
+}
+
+func (m *MetaobjectDefinitionAccessModel) toTerraformObject(ctx context.Context) (types.Object, diag.Diagnostics) {
+	return types.ObjectValueFrom(ctx, map[string]attr.Type{
+		"admin":      types.StringType,
+		"storefront": types.StringType,
+	}, m)
+}
+
+func (m *MetaobjectDefinitionAccessModel) toShopifyModel() *shopify.MetaobjectAccess {
+	storefront := m.Storefront.ValueString()
+	if storefront == "LEGACY_LIQUID_ONLY" {
+		storefront = ""
+	}
+	return &shopify.MetaobjectAccess{
+		Admin:      m.Admin.ValueString(),
+		Storefront: storefront,
+	}
 }
 
 // MetaobjectFieldDefinitionModel describes the metaobject field definition data model.
@@ -88,7 +120,6 @@ func (r *MetaobjectDefinitionResource) Schema(ctx context.Context, req resource.
 			"display_name_key": schema.StringAttribute{
 				MarkdownDescription: "The key of a field to reference as the display name for each object.",
 				Optional:            true,
-				Computed:            true,
 			},
 			"field_definitions": schema.ListNestedAttribute{
 				NestedObject: schema.NestedAttributeObject{
@@ -151,6 +182,29 @@ Must be 3-64 characters long and only contain alphanumeric, hyphen, and undersco
 			"has_thumbnail_field": schema.BoolAttribute{
 				MarkdownDescription: "Whether this metaobject definition has field whose type can visually represent a metaobject with the thumbnailField.",
 				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"access": schema.SingleNestedAttribute{
+				MarkdownDescription: "The access settings associated with the metafield definition.",
+				Attributes: map[string]schema.Attribute{
+					"admin": schema.StringAttribute{
+						MarkdownDescription: "The default admin access setting used for the metafields under this definition.",
+						Optional:            true,
+						Computed:            true,
+					},
+					"storefront": schema.StringAttribute{
+						MarkdownDescription: "The storefront access setting used for the metafields under this definition.",
+						Optional:            true,
+						Computed:            true,
+					},
+				},
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
+				},
 			},
 		},
 	}
@@ -187,16 +241,27 @@ func (r *MetaobjectDefinitionResource) Create(ctx context.Context, req resource.
 		DisplayNameKey:   displayNameKey,
 		FieldDefinitions: shopifyFieldDefinitions,
 	}
+	if !data.Access.IsNull() && !data.Access.IsUnknown() {
+		var access MetaobjectDefinitionAccessModel
+		resp.Diagnostics.Append(data.Access.As(ctx, &access, basetypes.ObjectAsOptions{})...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		input.Access = access.toShopifyModel()
+	}
 	createdMetaobjectDefinition, err := r.client.CreateMetaobjectDefinition(ctx, &input)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create metaobject definition, got error: %s", err))
 		return
 	}
 
-	createdData := convertMetaobjectDefinitionToResourceModel(createdMetaobjectDefinition, &data)
+	createdData, diag := convertMetaobjectDefinitionToResourceModel(ctx, createdMetaobjectDefinition, &data)
 	tflog.Trace(ctx, "created a metaobject definition", map[string]interface{}{
 		"id": createdData.ID,
 	})
+	if resp.Diagnostics.Append(diag...); resp.Diagnostics.HasError() {
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, createdData)...)
 }
@@ -213,8 +278,12 @@ func (r *MetaobjectDefinitionResource) Read(ctx context.Context, req resource.Re
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read metaobject definition, got error: %s", err))
 		return
 	}
+	metaobjectDefinitionModel, diags := convertMetaobjectDefinitionToResourceModel(ctx, metaobjectDefinition, &data)
+	if resp.Diagnostics.Append(diags...); resp.Diagnostics.HasError() {
+		return
+	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, convertMetaobjectDefinitionToResourceModel(metaobjectDefinition, &data))...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, metaobjectDefinitionModel)...)
 }
 
 func (r *MetaobjectDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -292,12 +361,23 @@ func (r *MetaobjectDefinitionResource) Update(ctx context.Context, req resource.
 		DisplayNameKey:   displayNameKey,
 		FieldDefinitions: fieldDefinitions1stReq,
 	}
+	if !data.Access.IsNull() && !data.Access.IsUnknown() {
+		var access MetaobjectDefinitionAccessModel
+		resp.Diagnostics.Append(data.Access.As(ctx, &access, basetypes.ObjectAsOptions{})...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		input1stReq.Access = access.toShopifyModel()
+	}
 	updatedMetaobjectDefinition, err := r.client.UpdateMetaobjectDefinition(ctx, data.ID.ValueString(), &input1stReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update metaobject definition, got error: %s", err))
 		return
 	}
-	updateData := convertMetaobjectDefinitionToResourceModel(updatedMetaobjectDefinition, &data)
+	updateData, diags := convertMetaobjectDefinitionToResourceModel(ctx, updatedMetaobjectDefinition, &data)
+	if resp.Diagnostics.Append(diags...); resp.Diagnostics.HasError() {
+		return
+	}
 
 	if len(fieldDefinitions2ndReq) > 0 {
 		input2ndReq := shopify.MetaobjectDefinitionUpdateInput{
@@ -311,7 +391,10 @@ func (r *MetaobjectDefinitionResource) Update(ctx context.Context, req resource.
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update metaobject definition, got error: %s", err))
 			return
 		}
-		updateData = convertMetaobjectDefinitionToResourceModel(updatedMetaobjectDefinition, &data)
+		updateData, diags = convertMetaobjectDefinitionToResourceModel(ctx, updatedMetaobjectDefinition, &data)
+		if resp.Diagnostics.Append(diags...); resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &updateData)...)
@@ -338,7 +421,11 @@ func (r *MetaobjectDefinitionResource) ImportState(ctx context.Context, req reso
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func convertMetaobjectDefinitionToResourceModel(definition *shopify.MetaobjectDefinition, data *MetaobjectDefinitionResourceModel) *MetaobjectDefinitionResourceModel {
+func convertMetaobjectDefinitionToResourceModel(ctx context.Context, definition *shopify.MetaobjectDefinition, data *MetaobjectDefinitionResourceModel) (*MetaobjectDefinitionResourceModel, diag.Diagnostics) {
+	access, diags := convertAccessToModel(definition.Access).toTerraformObject(ctx)
+	if diags.HasError() {
+		return nil, diags
+	}
 	fieldDefinitionModels := make([]*MetaobjectFieldDefinitionModel, 0, len(definition.FieldDefinitions))
 	for _, fieldDefinition := range definition.FieldDefinitions {
 		fieldDefinitionModels = append(fieldDefinitionModels, convertMetaobjectFieldDefinitionToModel(fieldDefinition))
@@ -361,6 +448,14 @@ func convertMetaobjectDefinitionToResourceModel(definition *shopify.MetaobjectDe
 		DisplayNameKey:    types.StringPointerValue(definition.DisplayNameKey),
 		FieldDefinitions:  fieldDefinitionModels,
 		HasThumbnailField: types.BoolValue(definition.HasThumbnailField),
+		Access:            access,
+	}, nil
+}
+
+func convertAccessToModel(access *shopify.MetaobjectAccess) *MetaobjectDefinitionAccessModel {
+	return &MetaobjectDefinitionAccessModel{
+		Admin:      types.StringValue(access.Admin),
+		Storefront: types.StringValue(access.Storefront),
 	}
 }
 

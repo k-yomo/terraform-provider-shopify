@@ -40,6 +40,8 @@ func TestAccMetaobjectDefinitionResource(t *testing.T) {
 					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "field_definitions.#", "3"),
 					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "field_definitions.0.validations.0.name", "min"),
 					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "field_definitions.0.validations.0.value", "10"),
+					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "access.admin", "PUBLIC_READ_WRITE"),
+					resource.TestCheckResourceAttr("shopify_metaobject_definition.author", "access.storefront", "PUBLIC_READ"),
 				),
 			},
 		},
@@ -98,6 +100,9 @@ resource "shopify_metaobject_definition" "author" {
 	  type     = "rich_text_field"
     }
   ]
+  access = {
+	storefront = "PUBLIC_READ"
+  }
 }
 `, metaobjectType)
 }
