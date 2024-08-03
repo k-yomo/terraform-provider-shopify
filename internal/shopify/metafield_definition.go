@@ -14,6 +14,7 @@ type MetafieldDefinition struct {
 	Type           *MetafieldDefinitionType         `json:"type"`
 	PinnedPosition *int                             `json:"pinnedPosition"`
 	Validations    []*MetafieldDefinitionValidation `json:"validations"`
+	Access         *MetafieldAccess                 `json:"access"`
 }
 
 type MetafieldDefinitionType struct {
@@ -26,6 +27,14 @@ type MetafieldDefinitionValidation struct {
 	Value string `json:"value"`
 }
 
+type MetafieldAccess struct {
+	Admin           string `json:"admin,omitempty"`
+	CustomerAccount string `json:"customerAccount,omitempty"`
+	Storefront      string `json:"storefront,omitempty"`
+	// TODO: Add grants
+	// https://shopify.dev/docs/api/admin-graphql/unstable/input-objects/MetafieldAccessInput#field-grants
+}
+
 type MetafieldDefinitionInput struct {
 	Name        string                           `json:"name"`
 	Description string                           `json:"description,omitempty"`
@@ -35,6 +44,7 @@ type MetafieldDefinitionInput struct {
 	Type        string                           `json:"type"`
 	Pin         bool                             `json:"pin"`
 	Validations []*MetafieldDefinitionValidation `json:"validations"`
+	Access      *MetafieldAccess                 `json:"access,omitempty"`
 }
 
 type CreateMetafieldDefinitionResponse struct {
@@ -64,6 +74,11 @@ mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
       validations {
         name	
         value
+      }
+      access {
+        admin
+        customerAccount	
+        storefront
       }
     }
     userErrors {
@@ -109,6 +124,11 @@ query metafieldDefinition($id: ID!) {
       name	
       value
     }
+    access {
+      admin
+      customerAccount	
+      storefront
+    }
   }
 }
 `
@@ -129,6 +149,7 @@ type MetafieldDefinitionUpdateInput struct {
 	Key         string                           `json:"key"`
 	Pin         bool                             `json:"pin"`
 	Validations []*MetafieldDefinitionValidation `json:"validations"`
+	Access      *MetafieldAccess                 `json:"access,omitempty"`
 }
 
 type UpdateMetafieldDefinitionResponse struct {
@@ -158,6 +179,11 @@ mutation UpdateMetafieldDefinition($definition: MetafieldDefinitionUpdateInput!)
       validations {
         name	
         value
+      }
+      access {
+        admin
+        customerAccount	
+        storefront
       }
     }
     userErrors {
