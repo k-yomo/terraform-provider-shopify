@@ -9,7 +9,7 @@ install:
 
 .PHONY: uninstall
 uninstall:
-	rm ~/.terraform.d/plugins/registry.terraform.io/k-yomo/shopify/${DEV_VERSION}/darwin_arm64/terraform-provider-shopify
+	rm -r ~/.terraform.d/plugins/registry.terraform.io/k-yomo/shopify/${DEV_VERSION}
 
 .PHONY: generate
 generate:
