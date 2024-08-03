@@ -7,6 +7,10 @@ DEV_VERSION=999.999.999
 install:
 	go build -o ~/.terraform.d/plugins/registry.terraform.io/k-yomo/shopify/${DEV_VERSION}/darwin_arm64/terraform-provider-shopify
 
+.PHONY: uninstall
+uninstall:
+	rm ~/.terraform.d/plugins/registry.terraform.io/k-yomo/shopify/${DEV_VERSION}/darwin_arm64/terraform-provider-shopify
+
 .PHONY: generate
 generate:
 	go generate ./...
