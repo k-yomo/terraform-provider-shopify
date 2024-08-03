@@ -174,7 +174,7 @@ func (r *MetafieldDefinitionResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	createdData := convertMetafieldDefinitionToResourceModel(createdMetafieldDefinition)
+	createdData := convertMetafieldDefinitionToResourceModel(createdMetafieldDefinition, data)
 	tflog.Trace(ctx, "created a metafield definition", map[string]interface{}{
 		"id": createdData.ID,
 	})
@@ -195,7 +195,7 @@ func (r *MetafieldDefinitionResource) Read(ctx context.Context, req resource.Rea
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, convertMetafieldDefinitionToResourceModel(metafieldDefinition))...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, convertMetafieldDefinitionToResourceModel(metafieldDefinition, data))...)
 }
 
 func (r *MetafieldDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -219,7 +219,7 @@ func (r *MetafieldDefinitionResource) Update(ctx context.Context, req resource.U
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update metafield definition, got error: %s", err))
 		return
 	}
-	updateData := convertMetafieldDefinitionToResourceModel(updatedMetafieldDefinition)
+	updateData := convertMetafieldDefinitionToResourceModel(updatedMetafieldDefinition, data)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &updateData)...)
 }
 
@@ -244,11 +244,15 @@ func (r *MetafieldDefinitionResource) ImportState(ctx context.Context, req resou
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func convertMetafieldDefinitionToResourceModel(definition *shopify.MetafieldDefinition) *MetafieldDefinitionResourceModel {
+func convertMetafieldDefinitionToResourceModel(definition *shopify.MetafieldDefinition, state MetafieldDefinitionResourceModel) *MetafieldDefinitionResourceModel {
+	description := types.StringValue(definition.Description)
+	if len(definition.Description) == 0 && state.Description.IsNull() {
+		description = types.StringNull()
+	}
 	return &MetafieldDefinitionResourceModel{
 		ID:          types.StringValue(definition.ID),
 		Name:        types.StringValue(definition.Name),
-		Description: types.StringPointerValue(definition.Description),
+		Description: description,
 		OwnerType:   types.StringValue(definition.OwnerType),
 		Namespace:   types.StringValue(definition.Namespace),
 		Key:         types.StringValue(definition.Key),

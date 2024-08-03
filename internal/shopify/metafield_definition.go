@@ -7,7 +7,7 @@ import (
 type MetafieldDefinition struct {
 	ID             string                           `json:"id"`
 	Name           string                           `json:"name"`
-	Description    *string                          `json:"description,omitempty"`
+	Description    string                           `json:"description"`
 	OwnerType      string                           `json:"ownerType"`
 	Namespace      string                           `json:"namespace"`
 	Key            string                           `json:"key"`
