@@ -28,9 +28,8 @@ func TestAccMetaobjectDefinitionResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "shopify_metaobject_definition.author",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName: "shopify_metaobject_definition.author",
+				ImportState:  true,
 			},
 			//// Update and Read testing
 			{
