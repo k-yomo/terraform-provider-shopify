@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"sort"
 
+	"github.com/hashicorp/terraform-provider-scaffolding-framework/pkg/slice"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -428,7 +430,10 @@ func convertMetaobjectDefinitionToResourceModel(ctx context.Context, definition 
 	}
 	fieldDefinitionModels := make([]*MetaobjectFieldDefinitionModel, 0, len(definition.FieldDefinitions))
 	for _, fieldDefinition := range definition.FieldDefinitions {
-		fieldDefinitionModels = append(fieldDefinitionModels, convertMetaobjectFieldDefinitionToModel(fieldDefinition))
+		fieldDefinitionData, _ := slice.FindBy(data.FieldDefinitions, func(v *MetaobjectFieldDefinitionModel) bool {
+			return v.Key.ValueString() == fieldDefinition.Key
+		})
+		fieldDefinitionModels = append(fieldDefinitionModels, convertMetaobjectFieldDefinitionToModel(fieldDefinition, fieldDefinitionData))
 	}
 
 	// Sort field definitions by order in the original data not to produce unnecessary diffs
@@ -440,11 +445,18 @@ func convertMetaobjectDefinitionToResourceModel(ctx context.Context, definition 
 		return fieldDefinitionOrderMap[fieldDefinitionModels[i].Key.ValueString()] < fieldDefinitionOrderMap[fieldDefinitionModels[j].Key.ValueString()]
 	})
 
+	// Shopify API handles empty string and null as the same value
+	// So not to produce inconsistency after apply, we'll set the same value as the plan if it's empoty
+	description := types.StringValue(definition.Description)
+	if definition.Description == "" && data.Description.IsNull() {
+		description = types.StringNull()
+	}
+
 	return &MetaobjectDefinitionResourceModel{
 		ID:                types.StringValue(definition.ID),
 		Name:              types.StringValue(definition.Name),
 		Type:              types.StringValue(definition.Type),
-		Description:       types.StringPointerValue(definition.Description),
+		Description:       description,
 		DisplayNameKey:    types.StringPointerValue(definition.DisplayNameKey),
 		FieldDefinitions:  fieldDefinitionModels,
 		HasThumbnailField: types.BoolValue(definition.HasThumbnailField),
@@ -459,11 +471,15 @@ func convertAccessToModel(access *shopify.MetaobjectAccess) *MetaobjectDefinitio
 	}
 }
 
-func convertMetaobjectFieldDefinitionToModel(definition *shopify.MetaobjectFieldDefinition) *MetaobjectFieldDefinitionModel {
+func convertMetaobjectFieldDefinitionToModel(definition *shopify.MetaobjectFieldDefinition, model *MetaobjectFieldDefinitionModel) *MetaobjectFieldDefinitionModel {
+	description := types.StringValue(definition.Description)
+	if definition.Description == "" && model != nil && model.Description.IsNull() {
+		description = types.StringNull()
+	}
 	return &MetaobjectFieldDefinitionModel{
 		Key:         types.StringValue(definition.Key),
 		Name:        types.StringValue(definition.Name),
-		Description: types.StringPointerValue(definition.Description),
+		Description: description,
 		Type:        types.StringValue(definition.Type.Name),
 		Required:    types.BoolValue(definition.Required),
 		Validations: convertValidationsToModels(definition.Validations),

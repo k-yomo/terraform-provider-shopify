@@ -13,7 +13,7 @@ type MetaobjectDefinition struct {
 	ID                string                       `json:"id"`
 	Type              string                       `json:"type"`
 	Name              string                       `json:"name"`
-	Description       *string                      `json:"description,omitempty"`
+	Description       string                       `json:"description,omitempty"`
 	DisplayNameKey    *string                      `json:"displayNameKey,omitempty"`
 	FieldDefinitions  []*MetaobjectFieldDefinition `json:"fieldDefinitions"`
 	HasThumbnailField bool                         `json:"hasThumbnailField"`
@@ -23,7 +23,7 @@ type MetaobjectDefinition struct {
 type MetaobjectFieldDefinition struct {
 	Key               string                           `json:"key"`
 	Name              string                           `json:"name"`
-	Description       *string                          `json:"description,omitempty"`
+	Description       string                           `json:"description,omitempty"`
 	Type              *MetafieldDefinitionType         `json:"type"`
 	Required          bool                             `json:"required"`
 	HasThumbnailField bool                             `json:"hasThumbnailField"`
