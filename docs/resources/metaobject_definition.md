@@ -49,6 +49,7 @@ resource "shopify_metaobject_definition" "example" {
 
 ### Optional
 
+- `access` (Attributes) The access settings associated with the metafield definition. (see [below for nested schema](#nestedatt--access))
 - `description` (String) The description for the metaobject definition.
 - `display_name_key` (String) The key of a field to reference as the display name for each object.
 
@@ -80,6 +81,16 @@ Required:
 
 - `name` (String) The name for the metafield definition validation.
 - `value` (String) The value for the metafield definition validation.
+
+
+
+<a id="nestedatt--access"></a>
+### Nested Schema for `access`
+
+Optional:
+
+- `admin` (String) The default admin access setting used for the metafields under this definition.
+- `storefront` (String) The storefront access setting used for the metafields under this definition.
 
 ## Import
 
