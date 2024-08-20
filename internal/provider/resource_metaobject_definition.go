@@ -19,9 +19,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/hashicorp/terraform-provider-shopify/internal/shopify"
-	"github.com/hashicorp/terraform-provider-shopify/internal/utils"
-	"github.com/hashicorp/terraform-provider-shopify/pkg/slice"
+	"github.com/k-yomo/terraform-provider-shopify/internal/shopify"
+	"github.com/k-yomo/terraform-provider-shopify/internal/utils"
+	"github.com/k-yomo/terraform-provider-shopify/pkg/slice"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.

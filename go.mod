@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-shopify
+module github.com/k-yomo/terraform-provider-shopify
 
 go 1.21
 

@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/hashicorp/terraform-provider-shopify/internal/shopify"
+	"github.com/k-yomo/terraform-provider-shopify/internal/shopify"
 
-	"github.com/hashicorp/terraform-provider-shopify/internal/utils"
+	"github.com/k-yomo/terraform-provider-shopify/internal/utils"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
