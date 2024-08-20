@@ -21,7 +21,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/k-yomo/terraform-provider-shopify/internal/shopify"
 	"github.com/k-yomo/terraform-provider-shopify/internal/utils"
-	"github.com/k-yomo/terraform-provider-shopify/pkg/slice"
+	"github.com/k-yomo/terraform-provider-shopify/pkg/xslice"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -424,7 +424,7 @@ func convertMetaobjectDefinitionToResourceModel(ctx context.Context, definition 
 	}
 	fieldDefinitionModels := make([]*MetaobjectFieldDefinitionModel, 0, len(definition.FieldDefinitions))
 	for _, fieldDefinition := range definition.FieldDefinitions {
-		fieldDefinitionData, _ := slice.FindBy(data.FieldDefinitions, func(v *MetaobjectFieldDefinitionModel) bool {
+		fieldDefinitionData, _ := xslice.FindBy(data.FieldDefinitions, func(v *MetaobjectFieldDefinitionModel) bool {
 			return v.Key.ValueString() == fieldDefinition.Key
 		})
 		fieldDefinitionModels = append(fieldDefinitionModels, convertMetaobjectFieldDefinitionToModel(fieldDefinition, fieldDefinitionData))
