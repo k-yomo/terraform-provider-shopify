@@ -8,10 +8,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/k-yomo/terraform-provider-shopify/internal/shopify"
-
-	"github.com/k-yomo/terraform-provider-shopify/internal/utils"
-
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
@@ -19,6 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/k-yomo/terraform-provider-shopify/internal/shopify"
+	"github.com/k-yomo/terraform-provider-shopify/internal/utils"
 )
 
 // Ensure ShopifyProvider satisfies various provider interfaces.
@@ -140,6 +138,7 @@ func (p *ShopifyProvider) Resources(ctx context.Context) []func() resource.Resou
 	return []func() resource.Resource{
 		NewMetafieldDefinitionResource,
 		NewMetaobjectDefinitionResource,
+		NewPageResource,
 	}
 }
 
