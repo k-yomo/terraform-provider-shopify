@@ -28,13 +28,13 @@ import (
 var _ resource.Resource = &MetaobjectDefinitionResource{}
 var _ resource.ResourceWithImportState = &MetaobjectDefinitionResource{}
 
-func NewMetaobjectDefinitionResource() resource.Resource {
-	return &MetaobjectDefinitionResource{}
-}
-
 // MetaobjectDefinitionResource defines the resource implementation.
 type MetaobjectDefinitionResource struct {
 	client *shopify.Client
+}
+
+func NewMetaobjectDefinitionResource() resource.Resource {
+	return &MetaobjectDefinitionResource{}
 }
 
 type MetaobjectFieldDefinitionResourceModel struct {

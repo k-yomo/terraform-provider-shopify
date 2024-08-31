@@ -13,6 +13,9 @@ require (
 	github.com/rs/xid v1.5.0
 )
 
+// TODO: Revert once https://github.com/bold-commerce/go-shopify/pull/305 is merged
+replace github.com/bold-commerce/go-shopify/v4 v4.5.0 => github.com/k-yomo/go-shopify/v4 v4.0.0-20240829152054-72300a2398fa
+
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/Kunde21/markdownfmt/v3 v3.1.0 // indirect
